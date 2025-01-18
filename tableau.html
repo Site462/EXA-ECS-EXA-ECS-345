@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Revenus</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .full-image {
+            width: 100%;
+            height: calc(100vh - 80px); /* Hauteur de l'écran moins la hauteur de l'en-tête */
+            object-fit: contain;
+            background-color: #f3f4f6;
+        }
+        .header {
+            height: 80px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 overflow-hidden">
+    <!-- En-tête plus compact -->
+    <header class="bg-white shadow header flex items-center">
+        <div class="w-full px-6">
+            <h1 class="text-2xl font-bold text-gray-900">Les revenus sont la  </h1>
+        </div>
+    </header>
+
+    <!-- Image optimisée -->
+    <main class="w-full">
+        <img 
+            src="https://image.noelshack.com/fichiers/2025/03/6/1737213858-screenshot-20250118-142538.jpg" 
+            alt="Tableau de revenus" 
+            class="full-image"
+        >
+    </main>
+</body>
+</html>

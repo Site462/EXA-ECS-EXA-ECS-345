@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique des Recharges</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            min-height: 100vh;
+            padding: 1rem;
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        h1 i {
+            color: var(--primary-color);
+        }
+
+        .history-item {
+            background: var(--card-bg);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-group i {
+            width: 16px;
+            color: var(--primary-color);
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status i {
+            font-size: 0.8rem;
+        }
+
+        .status-success {
+            background: #ecfdf5;
+            color: var(--success-color);
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: var(--warning-color);
+        }
+
+        .status-failed {
+            background: #fee2e2;
+            color: var(--error-color);
+        }
+
+        .operator-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .operator-logo i {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .reject-reason {
+            grid-column: 1 / -1;
+            background: #fee2e2;
+            padding: 0.5rem;
+            border-radius: 4px;
+            color: var(--error-color);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .processing-info {
+            grid-column: 1 / -1;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+                margin: 0;
+            }
+
+            .history-item {
+                grid-template-columns: 1fr;
+                padding: 0.8rem;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-history"></i> Historique des Recharges</h1>
+        <div id="historyList"></div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules comme avant
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWG259p7VgJvMZqoxBR7fqSaer6XPphLo",
+            authDomain: "calvados-9a518.firebaseapp.com",
+            databaseURL: "https://calvados-9a518-default-rtdb.firebaseio.com",
+            projectId: "calvados-9a518",
+            storageBucket: "calvados-9a518.firebaseapp.com",
+            messagingSenderId: "233327937635",
+            appId: "1:233327937635:web:b7a5847457783d90841056"
+        };
+
+        // Les fonctions restent les mêmes, seule la création des éléments HTML change
+        function createHistoryItem(transaction, userId) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.dataset.transactionId = transaction.transactionId || '';
+
+            // Mise à jour du solde si nécessaire
+            if (transaction.status === 'success' && !transaction.credited && userId) {
+                updateUserBalance(userId, transaction.amount || 0, transaction.transactionId);
+            }
+
+            const operatorIcon = getOperatorIcon(transaction.operator);
+            const statusIcon = getStatusIcon(transaction.status);
+
+            historyItem.innerHTML = `
+                <div class="history-info">
+                    <div class="operator-logo">
+                        <i class="${operatorIcon}"></i>
+                    </div>
+                    <div class="info-group">
+                        <i class="fas fa-money-bill"></i>
+                        <div>
+                            <div class="info-label">Montant</div>
+                            <div class="info-value">${transaction.amount || 0} FCFA</div>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <div class="info-label">Numéro</div>
+                            <div class="info-value">${transaction.phone || 'Non spécifié'}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="history-info">
+                    <div class="info-group">
+                        <i class="fas fa-fingerprint"></i>
+                        <div>
+                            <div class="info-label">ID Transaction</div>
+                            <div class="info-value">${transaction.transactionId || 'Non spécifié'}</div>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <div class="info-label">Date</div>
+                            <div class="info-value">${formatDate(transaction.date)}</div>
+                        </div>
+                    </div>
+                    <div class="status ${getStatusClass(transaction.status || 'pending')}">
+                        <i class="${statusIcon}"></i>
+                        ${translateStatus(transaction.status || 'pending')}
+                    </div>
+                </div>
+                ${transaction.processedDate ? `
+                    <div class="processing-info">
+                        <i class="fas fa-clock"></i>
+                        Traité le ${formatDate(transaction.processedDate)}
+                    </div>
+                ` : ''}
+                ${transaction.status === 'failed' && transaction.rejectReason ? `
+                    <div class="reject-reason">
+                        <i class="fas fa-exclamation-circle"></i>
+                        ${transaction.rejectReason}
+                    </div>
+                ` : ''}
+            `;
+
+            return historyItem;
+        }
+
+        function getOperatorIcon(operator) {
+            const operators = {
+                'orange': 'fas fa-mobile-alt',
+                'mtn': 'fas fa-signal',
+                'moov': 'fas fa-broadcast-tower',
+                'default': 'fas fa-sim-card'
+            };
+            return operators[operator?.toLowerCase()] || operators.default;
+        }
+
+        function getStatusIcon(status) {
+            const icons = {
+                'success': 'fas fa-check-circle',
+                'pending': 'fas fa-clock',
+                'failed': 'fas fa-times-circle'
+            };
+            return icons[status] || icons.pending;
+        }
+
+        // Le reste du code JavaScript reste identique
+    </script>
+</body>
+</html>

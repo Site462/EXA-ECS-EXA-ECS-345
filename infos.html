@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #4285f4;
+            --text-color: #202124;
+            --background-light: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(45deg);
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: '●';
+            color: var(--secondary-color);
+        }
+
+        .highlight-box {
+            background: var(--background-light);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 15px 0;
+        }
+
+        .important {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background: var(--background-light);
+            border-radius: 10px;
+        }
+
+        .benefit-icon {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .note {
+            font-style: italic;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EXA ECS</h1>
+            <p>Excellence en Solutions Électriques</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>Notre Entreprise</h2>
+                <p>EXA ECS est votre partenaire de confiance dans le domaine de l'électricité. Nous offrons des opportunités d'investissement uniques pour des revenus durables et croissants.</p>
+            </div>
+
+            <div class="section">
+                <h2>Conditions Financières</h2>
+                <div class="highlight-box">
+                    <p><span class="important">Montant minimum de recharge :</span> 3 500 FCFA</p>
+                    <p><span class="important">Montant minimum de retrait :</span> 1 000 FCFA</p>
+                    <p><span class="important">Frais de retrait :</span> 10% du montant</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Vos Avantages</h2>
+                <div class="benefit-item">
+                    <span class="benefit-icon">💰</span>
+                    <p>Bénéficiez de 10% sur chaque achat VIP de vos travailleurs</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">🔄</span>
+                    <p>Versement automatique des fonds sur votre solde principal</p>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">🎁</span>
+                    <p>Codes bonus exclusifs pour le partage de votre lien de parrainage</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Processus de Recharge</h2>
+                <p>Vos fonds sont instantanément crédités sur votre solde principal EXA ECS après validation de votre recharge.</p>
+                <div class="note">
+                    <p>⚠️ En cas de recharge incorrecte, vous recevrez une notification détaillée expliquant le motif du rejet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

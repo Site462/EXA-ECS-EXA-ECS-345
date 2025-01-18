@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eau Force</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.1/feather.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2196f3;
+            max-width: 100%;
+            padding-bottom: 80px;
+        }
+
+        .alert-banner {
+            background-color: #1976d2;
+            color: white;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        .icon-container {
+            width: 40px;
+            min-width: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            z-index: 2;
+            background-color: #1976d2;
+        }
+
+        .alert-text-container {
+            flex: 1;
+            overflow: hidden;
+            padding-left: 10px;
+        }
+
+        .alert-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+
+        .main-section {
+            margin: 12px;
+            background-image: url('/api/placeholder/800/400');
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .content-overlay {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 8px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .description {
+            font-size: 16px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .hexagon-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            gap: 10px;
+            background: white;
+            margin: 12px;
+            border-radius: 10px;
+        }
+
+        .hexagon-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .hexagon-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70px;
+        }
+
+        .hexagon {
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .hexagon i {
+            font-size: 24px;
+            color: white;
+            z-index: 2;
+        }
+
+        .hexagon-button:hover .hexagon {
+            transform: scale(1.1);
+        }
+
+        .hexagon-button span {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .depot { background-color: #64B5F6; }
+        .retirer { background-color: #42A5F5; }
+        .entreprise { background-color: #BA68C8; }
+        .recompense { background-color: #FF7043; }
+
+        .verification-section {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+        }
+        .hexagon.information {
+    /* Gardez les mêmes propriétés de base que .hexagon.entreprise */
+    /* Vous pouvez ajuster la couleur si nécessaire */
+    background-color: #007bff; /* ou la couleur de votre choix */
+}
+.hexagon.revenus {
+    /* Garder les mêmes propriétés de base que .hexagon.recompense */
+    background-color: #28a745; /* ou la couleur de votre choix */
+}
+
+        .verify-card {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .verify-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .verify-button {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .verify-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .verify-blue { background-color: #00B0FF; }
+        .verify-green { background-color: #25D366; }
+
+        .balance-section {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+        }
+
+        .balance-card {
+            flex: 1;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .balance-amount {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .dynamic-info {
+            margin: 12px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .dynamic-info h2 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 20px;
+        }
+
+        .activity-icon.deposit { 
+            background-color: #4CAF50; 
+        }
+        .activity-icon.withdrawal { 
+            background-color: #F44336; 
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .balance-blue { 
+            background: linear-gradient(45deg, #2196f3, #42a5f5); 
+        }
+        .balance-purple { 
+            background: linear-gradient(45deg, #9c27b0, #ba68c8); 
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.98);
+            padding: 0.6rem;
+            z-index: 100;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-around;
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+        }
+
+        .nav-button {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            padding: 0.5rem 0.8rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            min-width: 60px;
+        }
+
+        .nav-button span {
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-top: 0.2rem;
+            opacity: 0;
+            transform: translateY(-3px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button.active {
+            color: white;
+        }
+
+        .nav-button.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            border-radius: 10px;
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .nav-button.active span {
+            opacity: 1;
+            transform: translateY(0);
+            color: white;
+            z-index: 2;
+            position: relative;
+        }
+
+        .nav-button.active i {
+            position: relative;
+            z-index: 2;
+        }
+
+        .whatsapp-icon {
+            color: #25D366;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .nav-button {
+                min-width: 55px;
+                padding: 0.4rem;
+            }
+            
+            .nav-button span {
+                font-size: 0.65rem;
+            }
+            
+            .verification-section {
+                flex-direction: column;
+            }
+            
+            .verify-card {
+                margin-bottom: 10px;
+            }
+            
+            .balance-section {
+                flex-direction: column;
+            }
+            
+            .balance-card {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="alert-banner">
+        <div class="icon-container">
+            <i class="fas fa-bullhorn"></i>
+        </div>
+        <div class="alert-text-container">
+            <div class="alert-text">Ensemble parrainont et gagner 6% sûr chaque investment de nos filleuls ensemble disons avec EXA ECS c'est la meilleure solution de gagner de l'argent</div>
+        </div>
+    </div>
+
+    <div class="main-section">
+        <div class="content-overlay">
+            <div class="header">
+                <img src="https://image.noelshack.com/fichiers/2025/03/2/1736811678-exa-ecs-logo-1-rvb-1400x1200-300dpi-1-1.png" alt="Logo" class="logo">
+                <h1 class="title">EXA ECS</h1>
+            </div>
+            <p class="description">
+                Une compagnie publique d'électricité qui achetait de l'électricité principalement auprès de centrales électriques privées établies par les colons.
+            </p>
+        </div>
+    </div>
+
+    <div class="hexagon-buttons">
+        <a href="recharge.html" class="hexagon-link">
+            <div class="hexagon-button">
+                <div class="hexagon depot">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <span>Dépôt</span>
+            </div>
+        </a>
+        <a href="retrait.html" class="hexagon-link">
+            <div class="hexagon-button">
+                <div class="hexagon retirer">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <span>Retirer</span>
+            </div>
+        </a>
+      <a href="infos.html" class="hexagon-link">
+    <div class="hexagon-button">
+        <div class="hexagon information">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <span>Information</span>
+    </div>
+</a>
+        <a href="tableau.html" class="hexagon-link">
+    <div class="hexagon-button">
+        <div class="hexagon revenus">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <span>Tableau des revenus</span>
+    </div>
+</a>
+    </div>
+
+    
+
+    <div class="verification-section">
+        <div class="verify-card">
+            <div>
+                <h3><i class="fas fa-mobile-alt"></i> Mes appareils</h3>
+                <p style="margin: 0">0</p>
+            </div>
+            <a href="/machine.html">
+                <button class="verify-button verify-blue">Vérifier</button>
+            </a>
+        </div>
+        <div class="verify-card">
+            <div>
+                <h3><i class="fab fa-whatsapp whatsapp-icon"></i> Groupe WhatsApp</h3>
+                Veuillez nous rejoindre 
+            </div>
+            <a href="https://wa.me/1234567890">
+                <button class="verify-button verify-green">Vérifier</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="dynamic-info">
+        <h2>
+            <i class="fas fa-chart-line"></i>
+            Il gagne de l'argent avec EXA ECS
+        </h2>
+        <div id="activity-feed"></div>
+    </div>
+
+    <footer class="footer">
+        <nav class="nav-buttons">
+            <a href="accueil.html" class="nav-button active" data-page="home">
+                <i data-feather="home"></i>
+                <span>Accueil</span>
+            </a>
+            <a href="historique.html" class="nav-button" data-page="history">
+                <i data-feather="clock"></i>
+                <span>Historique</span>
+            </a>
+            <a href="equipe.html" class="nav-button" data-page="team">
+                <i data-feather="users"></i>
+                <span>Équipe</span>
+            </a>
+            <a href="/balance.html" class="nav-button" data-page="account">
+                <i data-feather="user"></i>
+                <span>Compte</span>
+            </a>
+        </nav>
+    </footer>
+
+    <script>
+        // Configuration des codes pays
+        const COUNTRY_CODES = {
+            BENIN: '229',
+            COTE_DIVOIRE: '225',
+            BURKINA_FASO: '226',
+            TOGO: '228',
+            SENEGAL: '221'
+        };
+
+        // Fonction pour générer un numéro de téléphone aléatoire
+        function generatePhoneNumber(countryCode) {
+            const randomNum = Math.floor(Math.random() * 90000000) + 10000000;
+            return `+${countryCode}${randomNum.toString().substring(0, 4)}******`;
+        }
+
+        // Fonction pour générer un montant aléatoire
+        function generateAmount() {
+            const amounts = [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 10000, 15000, 20000];
+            return amounts[Math.floor(Math.random() * amounts.length)];
+        }
+
+        // Fonction pour formater le montant
+        function formatAmount(amount) {
+            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+
+        // Fonction pour générer une transaction
+        function generateTransaction() {
+            const countryCodes = Object.values(COUNTRY_CODES);
+            const countryCode = countryCodes[Math.floor(Math.random() * countryCodes.length)];
+            const isDeposit = Math.random() > 0.5;
+            const amount = generateAmount();
+            const phone = generatePhoneNumber(countryCode);
+            
+            return {
+                text: `${phone} a ${isDeposit ? 'rechargé' : 'retiré'} ${formatAmount(amount)} XOF`,
+                time: new Date().toLocaleString('fr-FR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }),
+                type: isDeposit ? 'deposit' : 'withdrawal',
+                icon: isDeposit ? 'fa-arrow-up' : 'fa-arrow-down'
+            };
+        }
+
+        // Fonction pour mettre à jour le flux d'activités
+        function updateActivityFeed() {
+            const feed = document.getElementById('activity-feed');
+            const transaction = generateTransaction();
+
+            const transactionHTML = `
+                <div class="activity-item">
+                    <div class="activity-icon ${transaction.type}">
+                        <i class="fas ${transaction.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">${transaction.text}</div>
+                        <div class="activity-time">${transaction.time}</div>
+                    </div>
+                </div>
+            `;
+
+            // Ajouter la nouvelle transaction au début du feed
+            feed.insertAdjacentHTML('afterbegin', transactionHTML);
+
+            // Garder seulement les 10 dernières transactions
+            const items = feed.getElementsByClassName('activity-item');
+            if (items.length > 10) {
+                feed.removeChild(items[items.length - 1]);
+            }
+        }
+
+        // Gestionnaire pour les boutons hexagonaux
+        document.querySelectorAll('.hexagon-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const action = this.querySelector('span').textContent.toLowerCase();
+                console.log(`Action ${action} cliquée`);
+            });
+        });
+
+        // Gestionnaire pour les boutons de vérification
+        document.querySelectorAll('.verify-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const type = this.closest('.verify-card').querySelector('h3').textContent.includes('appareil') ? 'appareil' : 'whatsapp';
+                console.log(`Vérification ${type} en cours...`);
+            });
+        });
+
+        // Gestionnaire pour les boutons de navigation
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // e.preventDefault();
+                
+                // Retrait de la classe active de tous les boutons
+                document.querySelectorAll('.nav-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Ajout de la classe active au bouton cliqué
+                this.classList.add('active');
+            });
+        });
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Générer les transactions initiales
+            for (let i = 0; i < 5; i++) {
+                updateActivityFeed();
+            }
+
+            // Mettre à jour les transactions toutes les 3 secondes
+            setInterval(updateActivityFeed, 3000);
+
+            // Initialiser les icônes Feather
+            feather.replace();
+
+            // Initialiser les événements de survol pour les hexagones
+            document.querySelectorAll('.hexagon-button').forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.querySelector('.hexagon').style.transform = 'scale(1.1)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.querySelector('.hexagon').style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

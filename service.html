@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Centre d'assistance - Nous sommes là pour vous aider de 8h à 20h">
+    <title>Centre d'Assistance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #6366f1, #3b82f6);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .support-card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+            -webkit-transition: transform 0.2s ease;
+        }
+
+        .support-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .support-card h3 {
+            color: #3b82f6;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background-color: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .button:hover, .button:focus {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+            outline: none;
+        }
+
+        .button.whatsapp {
+            background-color: #25D366;
+        }
+
+        .button.whatsapp:hover {
+            background-color: #20bd5a;
+        }
+
+        .button.telegram {
+            background-color: #0088cc;
+        }
+
+        .button.telegram:hover {
+            background-color: #0077b3;
+        }
+
+        .hours {
+            display: inline-block;
+            background-color: #34d399;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .support-card {
+                padding: 20px;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .support-card, .button {
+                transition: none;
+            }
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            .header {
+                background: #0000ff;
+            }
+            .button {
+                border: 2px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" role="banner">
+            <h1>🎯 Centre d'Assistance</h1>
+            <p>Une équipe d'experts à votre service</p>
+            <span class="hours">
+                <i class="far fa-clock" aria-hidden="true"></i>
+                Disponible de 8h à 20h
+            </span>
+        </div>
+
+        <main role="main">
+            <section class="support-card" aria-labelledby="immediate-help">
+                <h3 id="immediate-help">
+                    <i class="fas fa-headset" aria-hidden="true"></i>
+                    Besoin d'aide immédiate ?
+                </h3>
+                <p>Notre équipe d'experts est à votre écoute pour vous apporter une assistance personnalisée et résoudre rapidement vos problèmes.</p>
+                <a href="https://wa.me/qr/M3XUSJAVMUTBK1" class="button" role="button">
+                    <i class="fas fa-comments" aria-hidden="true"></i>
+                    Démarrer une conversation
+                </a>
+            </section>
+
+            <section class="support-card" aria-labelledby="community">
+                <h3 id="community">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                    Rejoignez notre communauté
+                </h3>
+                <p>Restez connecté avec notre communauté et recevez une assistance rapide via vos applications préférées :</p>
+                <div class="social-buttons">
+                    <a href="https://chat.whatsapp.com/JNna1bUKJlU0AbmxgFLuJG" class="button whatsapp" role="button">
+                        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                        WhatsApp
+                    </a>
+                    
+                </div>
+            </section>
+
+            <section class="support-card" aria-labelledby="priority-support">
+                <h3 id="priority-support">
+                    <i class="fas fa-user-tie" aria-hidden="true"></i>
+                    Support prioritaire
+                </h3>
+                <p>Besoin d'une assistance spéciale ? Nos superviseurs sont disponibles pour traiter vos demandes prioritaires.</p>
+                <a href="https://wa.me/qr/M3XUSJAVMUTBK1" class="button" role="button">
+                    <i class="fas fa-star" aria-hidden="true"></i>
+                    Contacter un superviseur
+                </a>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

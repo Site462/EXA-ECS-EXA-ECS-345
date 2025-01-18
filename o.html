@@ -1,0 +1,187 @@
+[Suite du script précédent...]
+
+        async function updatePurchaseLimitsDisplay(userId) {
+            try {
+                for (let i = 0; i < VIP_PRODUCTS.length; i++) {
+                    const { currentPurchases, remainingPurchases } = await checkPurchaseLimit(userId, i);
+                    const limitSpan = document.getElementById(`purchaseLimit${i + 1}`);
+                    const investBtn = document.querySelector(`#product${i + 1} .invest-btn`);
+                    
+                    if (limitSpan) {
+                        if (remainingPurchases <= 0) {
+                            limitSpan.innerHTML = `<span class="limit-reached">
+                                <i class="fas fa-lock"></i> Limite d'achat atteinte
+                            </span>`;
+                        } else {
+                            limitSpan.innerHTML = `
+                                <i class="fas fa-info-circle"></i>
+                                ${remainingPurchases} achat${remainingPurchases > 1 ? 's' : ''} 
+                                restant${remainingPurchases > 1 ? 's' : ''}`;
+                        }
+                    }
+
+                    if (investBtn) {
+                        const canAfford = userBalance >= VIP_PRODUCTS[i].price;
+                        investBtn.disabled = remainingPurchases <= 0 || !canAfford;
+                        
+                        if (remainingPurchases <= 0) {
+                            investBtn.innerHTML = '<i class="fas fa-lock"></i> Limite atteinte';
+                        } else if (!canAfford) {
+                            investBtn.innerHTML = '<i class="fas fa-coins"></i> Solde insuffisant';
+                        } else {
+                            investBtn.innerHTML = '<i class="fas fa-hand-holding-usd"></i> Investir';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Erreur lors de la mise à jour de l'affichage:", error);
+                showNotification("Erreur lors de la mise à jour des limites", "error");
+            }
+        }
+
+        // Fonction de génération des cartes VIP
+        function generateVIPCards() {
+            const container = document.getElementById('vipCardsContainer');
+            container.innerHTML = VIP_PRODUCTS.map((product, index) => `
+                <div class="card" id="product${index + 1}">
+                    <div class="card-header vip${Math.min(index, 4)}">
+                        <div class="card-logo">
+                            <i class="fas ${product.icon}"></i>
+                        </div>
+                        VIP ${product.level}
+                    </div>
+                    <div class="price">${product.price.toLocaleString()} XOF</div>
+                    <div class="detail">
+                        <i class="fas fa-coins"></i>
+                        Revenus quotidien: ${product.dailyRevenue.toLocaleString()} XOF
+                    </div>
+                    <div class="detail">
+                        <i class="far fa-clock"></i>
+                        Période: ${product.period} jours
+                    </div>
+                    <div class="total">
+                        <i class="fas fa-sack-dollar"></i>
+                        Revenus total: ${product.totalRevenue.toLocaleString()} XOF
+                    </div>
+                    <div class="purchase-limit" id="purchaseLimit${index + 1}"></div>
+                    <button class="invest-btn" onclick="window.investProduct(${index}, ${product.price})">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        Investir
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Fonction d'investissement
+        async function investProduct(productId, amount) {
+            if (!currentUser) {
+                showNotification("Veuillez vous connecter pour investir", "error");
+                return;
+            }
+
+            try {
+                const { remainingPurchases } = await checkPurchaseLimit(currentUser.uid, productId);
+
+                if (remainingPurchases <= 0) {
+                    showNotification("Vous avez atteint la limite d'achat pour ce produit", "error");
+                    return;
+                }
+
+                if (userBalance < amount) {
+                    showNotification("Solde insuffisant pour cet investissement", "error");
+                    return;
+                }
+
+                // Récupération des détails du produit
+                const product = VIP_PRODUCTS[productId];
+                const newBalance = userBalance - amount;
+
+                // Mise à jour du solde utilisateur
+                const userRef = ref(db, `users/${currentUser.uid}`);
+                await update(userRef, {
+                    balance: newBalance
+                });
+
+                // Création du nouvel investissement
+                const investmentsRef = ref(db, `investments/${currentUser.uid}`);
+                const newInvestmentRef = push(investmentsRef);
+                
+                const currentDate = new Date();
+                const endDate = new Date();
+                endDate.setDate(currentDate.getDate() + product.period);
+
+                await set(newInvestmentRef, {
+                    productId: productId,
+                    amount: amount,
+                    timestamp: serverTimestamp(),
+                    status: 'active',
+                    dailyRevenue: product.dailyRevenue,
+                    totalRevenue: product.totalRevenue,
+                    period: product.period,
+                    purchaseDate: currentDate.toISOString(),
+                    endDate: endDate.toISOString()
+                });
+
+                userBalance = newBalance;
+                updateBalanceDisplay();
+                await updatePurchaseLimitsDisplay(currentUser.uid);
+                showNotification("Investissement réussi!", "success");
+
+            } catch (error) {
+                console.error("Erreur lors de l'investissement:", error);
+                showNotification("Une erreur est survenue lors de l'investissement", "error");
+            }
+        }
+
+        // Fonction de déconnexion
+        async function logout() {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("Erreur lors de la déconnexion:", error);
+                showNotification("Erreur lors de la déconnexion", "error");
+            }
+        }
+
+        // Initialisation de l'application
+        function initializeApp() {
+            generateVIPCards();
+
+            // Écoute des changements d'authentification
+            onAuthStateChanged(auth, async (user) => {
+                try {
+                    if (user) {
+                        currentUser = user;
+                        const userRef = ref(db, `users/${user.uid}`);
+                        
+                        // Mise à jour du nom d'utilisateur
+                        document.getElementById('userName').textContent = user.email || 'Utilisateur';
+                        
+                        // Écoute en temps réel du solde utilisateur
+                        onValue(userRef, (snapshot) => {
+                            if (snapshot.exists()) {
+                                userBalance = snapshot.val().balance || 0;
+                                updateBalanceDisplay();
+                                updatePurchaseLimitsDisplay(user.uid);
+                            }
+                        });
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                } catch (error) {
+                    console.error("Erreur d'initialisation:", error);
+                    showNotification("Erreur de connexion", "error");
+                }
+            });
+        }
+
+        // Exposition des fonctions nécessaires globalement
+        window.investProduct = investProduct;
+        window.logout = logout;
+
+        // Démarrage de l'application
+        initializeApp();
+    </script>
+</body>
+</html>

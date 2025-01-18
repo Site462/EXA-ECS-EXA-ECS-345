@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crée un compte EXA ECS </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
+            --secondary-gradient: linear-gradient(135deg, #1a237e, #283593);
+            --accent-color: #00c6ff;
+            --text-color: white;
+            --border-radius: 12px;
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 35px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+            transform: translateY(20px);
+        }
+
+        .container.active {
+            display: block;
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .form-header i {
+            font-size: 48px;
+            background: var(--accent-color);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            display: inline-block;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        h2 {
+            color: var(--text-color);
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-color);
+            letter-spacing: 0.5px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input:focus {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.12);
+            outline: none;
+        }
+
+        input:focus + i {
+            color: var(--accent-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: var(--border-radius);
+            color: #1a237e;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 198, 255, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            display: none;
+            text-align: center;
+            color: var(--text-color);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .error-message {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .success-message {
+            background: rgba(46, 213, 115, 0.2);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .switch-form {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+        }
+
+        .switch-form a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-left: 8px;
+        }
+
+        .switch-form a:hover {
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .referral-status {
+            font-size: 13px;
+            margin-top: 6px;
+            padding-left: 45px;
+            transition: var(--transition);
+        }
+
+        .referral-status.valid {
+            color: #2ecc71;
+        }
+
+        .referral-status.invalid {
+            color: #ff4757;
+        }
+
+        .customer-service-btn {
+            position: fixed;
+            width: 70px;
+            height: 70px;
+            background: var(--secondary-gradient);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+            right: 30px;
+            bottom: 30px;
+            text-decoration: none;
+        }
+
+        .customer-service-btn i {
+            font-size: 28px;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .customer-service-btn .label {
+            font-size: 9px;
+            color: var(--text-color);
+            text-align: center;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .customer-service-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            input {
+                padding: 12px 12px 12px 40px;
+                font-size: 15px;
+            }
+
+            .customer-service-btn {
+                width: 60px;
+                height: 60px;
+                right: 20px;
+                bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container active" id="login-form">
+        <div class="form-header">
+            <i class="fas fa-user-circle"></i>
+            <h2>\✓EXA ECS✓
+                 \</h2>
+        </div>
+        <form id="loginFormData">
+            <div class="input-group">
+                <input type="tel" id="loginTelephone" placeholder="Numéro de téléphone" required>
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="input-group">
+                <input type="password" id="loginPassword" placeholder="Mot de passe" required>
+                <i class="fas fa-lock"></i>
+            </div>
+            <div id="loginError" class="message error-message"></div>
+            <button type="submit">Se connecter</button>
+        </form>
+        <div class="switch-form">
+            Pas encore de compte ?<a href="#" id="switchToRegister">S'inscrire</a>
+        </div>
+    </div>
+
+    <div class="container" id="register-form">
+        <div class="form-header">
+            <i class="fas fa-user-plus"></i>
+            <h2>Créer un compte</h2>
+        </div>
+        <form id="signupFormData">
+            <div class="input-group">
+                <input type="text" id="signupUsername" placeholder="Nom d'utilisateur" required>
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="input-group">
+                <input type="tel" id="signupTelephone" placeholder="Numéro de téléphone" required>
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="input-group">
+                <input type="password" id="signupPassword" placeholder="Mot de passe" required>
+                <i class="fas fa-lock"></i>
+            </div>
+            <div class="input-group">
+                <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
+                <i class="fas fa-lock-open"></i>
+            </div>
+            <div class="input-group">
+                <input type="text" id="referralCode" placeholder="Code de parrainage (optionnel)">
+                <i class="fas fa-users"></i>
+                <div id="referralStatus" class="referral-status"></div>
+            </div>
+            <div id="signupError" class="message error-message"></div>
+            <div id="signupSuccess" class="message success-message"></div>
+            <button type="submit">S'inscrire</button>
+        </form>
+        <div class="switch-form">
+            Déjà inscrit ?<a href="#" id="switchToLogin">Se connecter</a>
+        </div>
+    </div>
+
+    <a href="service.html" class="customer-service-btn" id="customerServiceBtn" target="_blank">
+        <i class="fas fa-headset"></i>
+        <span class="label">Service<br>Client</span>
+    </a>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword 
+        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { 
+            getDatabase, 
+            ref, 
+            get,
+            set,
+            onValue
+        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWG259p7VgJvMZqoxBR7fqSaer6XPphLo",
+            authDomain: "calvados-9a518.firebaseapp.com",
+            databaseURL: "https://calvados-9a518-default-rtdb.firebaseio.com",
+            projectId: "calvados-9a518",
+            storageBucket: "calvados-9a518.firebaseapp.com",
+            messagingSenderId: "233327937635",
+            appId: "1:233327937635:web:b7a5847457783d90841056"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const database = getDatabase(app);
+
+        // Utility functions
+        const Utils = {
+            generateReferralCode() {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                return Array.from({ length: 6 }, () => 
+                    chars.charAt(Math.floor(Math.random() * chars.length))
+                ).join('');
+            },
+
+            async checkReferralCode(code) {
+                if (!code) return null;
+                const referralRef = ref(database, 'users');
+                const snapshot = await get(referralRef);
+                
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    for (const userId in users) {
+                        if (users[userId].referralCode === code) {
+                            return {
+                                userId,
+                                username: users[userId].username
+                            };
+                        }
+                    }
+                }
+                return null;
+            },
+
+            showMessage(elementId, message, isError = true) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.textContent = message;
+                    element.style.display = message ? 'block' : 'none';
+                    element.className = `message ${isError ? 'error-message' : 'success-message'}`;
+                }
+            },
+
+            clearMessages() {
+                ['loginError', 'signupError', 'signupSuccess', 'referralStatus'].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = '';
+                        element.style.display = 'none';
+                    }
+                });
+            },
+
+            updateReferralStatus(isValid, message) {
+                const statusElement = document.getElementById('referralStatus');
+                if (statusElement) {
+                    statusElement.textContent = message;
+                    statusElement.className = `referral-status ${isValid ? 'valid' : 'invalid'}`;
+                }
+            },
+
+            debounce(func, wait) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+        };
+
+        // Form handling functions
+        const FormHandler = {
+            toggleForm(formType) {
+                Utils.clearMessages();
+                const loginForm = document.getElementById('login-form');
+                const registerForm = document.getElementById('register-form');
+                
+                if (formType === 'login') {
+                    loginForm.classList.add('active');
+                    registerForm.classList.remove('active');
+                } else {
+                    loginForm.classList.remove('active');
+                    registerForm.classList.add('active');
+                }
+            },
+
+            async handleSignup(event) {
+                event.preventDefault();
+                Utils.clearMessages();
+
+                try {
+                    const username = document.getElementById("signupUsername").value;
+                    const telephone = document.getElementById("signupTelephone").value;
+                    const email = `${telephone}@temp.com`;
+                    const password = document.getElementById("signupPassword").value;
+                    const confirmPassword = document.getElementById("confirmPassword").value;
+                    const referralCode = document.getElementById("referralCode").value;
+
+                    if (password !== confirmPassword) {
+                        throw new Error("Les mots de passe ne correspondent pas");
+                    }
+
+                    if (password.length < 6) {
+                        throw new Error("Le mot de passe doit contenir au moins 6 caractères");
+                    }
+
+                    if (telephone.length < 8) {
+                        throw new Error("Numéro de téléphone invalide");
+                    }
+
+                    let referrerData = null;
+                    if (referralCode) {
+                        referrerData = await Utils.checkReferralCode(referralCode);
+                        if (!referrerData) {
+                            throw new Error("Code de parrainage invalide");
+                        }
+                    }
+
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    const newReferralCode = Utils.generateReferralCode();
+
+                    await set(ref(database, 'users/' + user.uid), {
+                        username,
+                        email,
+                        phoneNumber: telephone,
+                        balance: referrerData ? 500 : 0,
+                        referralCode: newReferralCode,
+                        referredBy: referrerData?.userId || null,
+                        createdAt: Date.now()
+                    });
+
+                    if (referrerData) {
+                        const referrerRef = ref(database, `users/${referrerData.userId}`);
+                        const referrerSnapshot = await get(referrerRef);
+                        if (referrerSnapshot.exists()) {
+                            const currentReferrer = referrerSnapshot.val();
+                            await set(ref(database, `users/${referrerData.userId}/balance`),
+                                (currentReferrer.balance || 0) + 10);
+                        }
+                    }
+
+                    Utils.showMessage("signupSuccess", "Compte créé avec succès ! Redirection...", false);
+                    
+                    setTimeout(() => {
+                        window.location.href = "accueil.html";
+                    }, 1500);
+
+                } catch (error) {
+                    Utils.showMessage("signupError", error.message);
+                }
+            },
+
+            async handleLogin(event) {
+                event.preventDefault();
+                Utils.clearMessages();
+
+                try {
+                    const telephone = document.getElementById("loginTelephone").value;
+                    const email = `${telephone}@temp.com`;
+                    const password = document.getElementById("loginPassword").value;
+
+                    await signInWithEmailAndPassword(auth, email, password);
+                    window.location.href = "accueil.html";
+                } catch (error) {
+                    Utils.showMessage("loginError", "Numéro ou mot de passe incorrect");
+                }
+            },
+
+            async handleReferralCodeInput(event) {
+                const code = event.target.value.trim().toUpperCase();
+                
+                if (!code) {
+                    Utils.updateReferralStatus(true, '');
+                    return;
+                }
+
+                try {
+                    const referrerData = await Utils.checkReferralCode(code);
+                    if (referrerData) {
+                        Utils.updateReferralStatus(true, `Code valide ! Parrain: ${referrerData.username}`);
+                    } else {
+                        Utils.updateReferralStatus(false, 'Code de parrainage invalide');
+                    }
+                } catch (error) {
+                    Utils.updateReferralStatus(false, 'Erreur de vérification du code');
+                }
+            },
+
+            handleReferralCodeFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const referralCode = urlParams.get('ref');
+                if (referralCode) {
+                    const referralInput = document.getElementById('referralCode');
+                    if (referralInput) {
+                        referralInput.value = referralCode.toUpperCase();
+                        FormHandler.handleReferralCodeInput({ target: referralInput });
+                    }
+                }
+            }
+        };
+
+        // Customer Service Button handling
+        class CustomerServiceButton {
+            constructor(element) {
+                this.element = element;
+                this.isDragging = false;
+                this.currentX = 0;
+                this.currentY = 0;
+                this.initialX = 0;
+                this.initialY = 0;
+                this.xOffset = 0;
+                this.yOffset = 0;
+
+                this.element.addEventListener('mousedown', this.dragStart.bind(this));
+                document.addEventListener('mousemove', this.drag.bind(this));
+                document.addEventListener('mouseup', this.dragEnd.bind(this));
+
+                this.element.addEventListener('touchstart', this.dragStart.bind(this));
+                document.addEventListener('touchmove', this.drag.bind(this));
+                document.addEventListener('touchend', this.dragEnd.bind(this));
+            }
+
+            dragStart(e) {
+                if (e.type === 'touchstart') {
+                    this.initialX = e.touches[0].clientX - this.xOffset;
+                    this.initialY = e.touches[0].clientY - this.yOffset;
+                } else {
+                    this.initialX = e.clientX - this.xOffset;
+                    this.initialY = e.clientY - this.yOffset;
+                }
+
+                if (e.target === this.element) {
+                    this.isDragging = true;
+                }
+            }
+
+            drag(e) {
+                if (this.isDragging) {
+                    e.preventDefault();
+
+                    if (e.type === 'touchmove') {
+                        this.currentX = e.touches[0].clientX - this.initialX;
+                        this.currentY = e.touches[0].clientY - this.initialY;
+                    } else {
+                        this.currentX = e.clientX - this.initialX;
+                        this.currentY = e.clientY - this.initialY;
+                    }
+
+                    this.xOffset = this.currentX;
+                    this.yOffset = this.currentY;
+
+                    this.setTranslate(this.currentX, this.currentY, this.element);
+                }
+            }
+
+            dragEnd() {
+                this.isDragging = false;
+            }
+
+            setTranslate(xPos, yPos, el) {
+                el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+            }
+        }
+
+        // Initialize event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Form event listeners
+            const signupForm = document.getElementById("signupFormData");
+            const loginForm = document.getElementById("loginFormData");
+            const referralInput = document.getElementById("referralCode");
+            const switchToRegister = document.getElementById("switchToRegister");
+            const switchToLogin = document.getElementById("switchToLogin");
+            const customerServiceBtn = document.getElementById('customerServiceBtn');
+
+            if (signupForm) {
+                signupForm.addEventListener("submit", FormHandler.handleSignup);
+            }
+
+            if (loginForm) {
+                loginForm.addEventListener("submit", FormHandler.handleLogin);
+            }
+
+            if (referralInput) {
+                referralInput.addEventListener("input", 
+                    Utils.debounce(FormHandler.handleReferralCodeInput, 500)
+                );
+            }
+
+            if (switchToRegister) {
+                switchToRegister.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    FormHandler.toggleForm('register');
+                });
+            }
+
+            if (switchToLogin) {
+                switchToLogin.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    FormHandler.toggleForm('login');
+                });
+            }
+
+            if (customerServiceBtn) {
+                new CustomerServiceButton(customerServiceBtn);
+            }
+
+            FormHandler.handleReferralCodeFromURL();
+        });
+
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Utilisateur connecté:", user.uid);
+            } else {
+                console.log("Utilisateur déconnecté");
+            }
+        });
+    </script>
+</body>
+</html>
