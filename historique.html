@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historique des Recharges</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
        :root {
@@ -59,6 +60,28 @@
 
         h1 i {
             color: var(--primary-color);
+        }
+
+        .delete-history-btn {
+            background-color: var(--error-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto 1rem;
+        }
+
+        .delete-history-btn:hover {
+            background-color: #dc2626;
         }
 
         .history-item {
@@ -120,10 +143,6 @@
             white-space: nowrap;
         }
 
-        .status i {
-            font-size: 0.8rem;
-        }
-
         .status-success {
             background: #ecfdf5;
             color: var(--success-color);
@@ -139,44 +158,6 @@
             color: var(--error-color);
         }
 
-        .operator-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f1f5f9;
-            margin-bottom: 0.5rem;
-        }
-
-        .operator-logo i {
-            font-size: 1.2rem;
-            color: var(--primary-color);
-        }
-
-        .reject-reason {
-            grid-column: 1 / -1;
-            background: #fee2e2;
-            padding: 0.5rem;
-            border-radius: 4px;
-            color: var(--error-color);
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .processing-info {
-            grid-column: 1 / -1;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            font-style: italic;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
         .no-records {
             text-align: center;
             padding: 2rem;
@@ -185,6 +166,55 @@
             background: #f8fafc;
             border-radius: 8px;
             border: 1px dashed var(--border-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .modal-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 48%;
+        }
+
+        .modal-btn-cancel {
+            background-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .modal-btn-confirm {
+            background-color: var(--error-color);
+            color: white;
         }
 
         @media (max-width: 640px) {
@@ -201,16 +231,38 @@
             h1 {
                 font-size: 1.2rem;
             }
-        } 
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1><i class="fas fa-history"></i> Historique des Recharges</h1>
+        <div id="deleteHistoryContainer"></div>
         <div id="historyList"></div>
     </div>
 
-<script type="module">
+    <!-- Modal de confirmation de suppression -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2>Supprimer l'historique</h2>
+            <p>Êtes-vous sûr de vouloir supprimer tout votre historique de recharges ?</p>
+            <div class="modal-actions">
+                <button id="cancelDelete" class="modal-btn modal-btn-cancel">Annuler</button>
+                <button id="confirmDelete" class="modal-btn modal-btn-confirm">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+  <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { 
             getAuth, 
@@ -448,6 +500,6 @@
                 historyList.innerHTML = '<div class="no-records">Veuillez vous connecter pour voir votre historique</div>';
             }
         });
-    </script>
+    </script> 
 </body>
 </html>
