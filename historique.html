@@ -210,7 +210,7 @@
         <div id="historyList"></div>
     </div>
 
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { 
             getAuth, 
@@ -223,7 +223,8 @@
             update,
             get,
             query,
-            orderByChild
+            orderByChild,
+            equalTo
         } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
         const firebaseConfig = {
@@ -236,201 +237,217 @@
             appId: "1:233327937635:web:b7a5847457783d90841056"
         };
 
-        try {
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getDatabase(app);
-            const creditedTransactions = new Set();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const creditedTransactions = new Set();
 
-            async function updateUserBalance(userId, amount, transactionId) {
-                if (creditedTransactions.has(transactionId)) return;
+        async function updateUserBalance(userId, amount, transactionId) {
+            if (creditedTransactions.has(transactionId)) return;
 
+            try {
+                const userRef = ref(db, `users/${userId}`);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const currentBalance = userData.solde || 0;
+                    const newBalance = currentBalance + parseFloat(amount);
+
+                    const updates = {};
+                    updates[`users/${userId}/solde`] = newBalance;
+                    updates[`transactions/${transactionId}/credited`] = true;
+
+                    await update(ref(db), updates);
+                    creditedTransactions.add(transactionId);
+                }
+            } catch (error) {
+                console.error('Erreur de mise à jour du solde:', error);
+            }
+        }
+
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) throw new Error('Date invalide');
+                
+                return new Intl.DateTimeFormat('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date).replace(',', ' à');
+            } catch (error) {
+                return 'Date non disponible';
+            }
+        }
+
+        function getStatusClass(status) {
+            const statusClasses = {
+                success: 'status-success',
+                pending: 'status-pending',
+                failed: 'status-failed'
+            };
+            return statusClasses[status] || '';
+        }
+
+        function translateStatus(status) {
+            const translations = {
+                success: 'Crédité',
+                pending: 'En cours de vérification',
+                failed: 'Échec'
+            };
+            return translations[status] || status;
+        }
+
+        function createHistoryItem(transaction, userId) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.dataset.transactionId = transaction.transactionId || '';
+
+            if (transaction.status === 'success' && !transaction.credited && userId) {
+                updateUserBalance(userId, transaction.amount || 0, transaction.transactionId);
+            }
+
+            historyItem.innerHTML = `
+                <div class="history-info">
+                    <div class="info-group">
+                        <span class="info-label">Montant</span>
+                        <span class="info-value">${transaction.amount || 0} FCFA</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Numéro rechargé</span>
+                        <span class="info-value">${transaction.phone || 'Non spécifié'}</span>
+                    </div>
+                </div>
+                <div class="history-info">
+                    <div class="info-group">
+                        <span class="info-label">Opérateur</span>
+                        <span class="info-value">${transaction.operator ? transaction.operator.toUpperCase() : 'Non spécifié'}</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">ID Transaction</span>
+                        <span class="info-value">${transaction.transactionId || 'Non spécifié'}</span>
+                    </div>
+                </div>
+                <div class="history-info">
+                    <div class="info-group">
+                        <span class="info-label">Date</span>
+                        <span class="info-value">${formatDate(transaction.date)}</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Numéro de paiement</span>
+                        <span class="info-value">${transaction.userPaymentNumber || 'Non spécifié'}</span>
+                    </div>
+                    <div class="status ${getStatusClass(transaction.status || 'pending')}">
+                        ${translateStatus(transaction.status || 'pending')}
+                    </div>
+                </div>
+            `;
+
+            return historyItem;
+        }
+
+        function displayTransactions(transactions, userId) {
+            const historyList = document.getElementById('historyList');
+            
+            if (!transactions || Object.keys(transactions).length === 0) {
+                historyList.innerHTML = '<div class="no-records">Aucune transaction trouvée</div>';
+                return;
+            }
+
+            const transactionsArray = Object.entries(transactions)
+                .map(([id, transaction]) => ({...transaction, id}))
+                .filter(transaction => transaction.userId === userId) // Filtrer par userId
+                .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+            const fragment = document.createDocumentFragment();
+            transactionsArray.forEach(transaction => {
+                fragment.appendChild(createHistoryItem(transaction, userId));
+            });
+
+            historyList.innerHTML = '';
+            historyList.appendChild(fragment);
+        }
+
+        function toggleDeleteHistoryButton(userId) {
+            const deleteHistoryContainer = document.getElementById('deleteHistoryContainer');
+            const deleteModal = document.getElementById('deleteModal');
+            const cancelDeleteBtn = document.getElementById('cancelDelete');
+            const confirmDeleteBtn = document.getElementById('confirmDelete');
+
+            const deleteHistoryBtn = document.createElement('button');
+            deleteHistoryBtn.innerHTML = '<i class="fas fa-trash"></i> Supprimer l\'historique';
+            deleteHistoryBtn.className = 'delete-history-btn';
+
+            deleteHistoryBtn.addEventListener('click', () => {
+                deleteModal.style.display = 'flex';
+            });
+
+            cancelDeleteBtn.addEventListener('click', () => {
+                deleteModal.style.display = 'none';
+            });
+
+            confirmDeleteBtn.addEventListener('click', async () => {
                 try {
-                    const userRef = ref(db, `users/${userId}`);
-                    const snapshot = await get(userRef);
+                    // Ne supprimer que les transactions de l'utilisateur connecté
+                    const transactionsRef = ref(db, 'transactions');
+                    const userTransactionsQuery = query(transactionsRef, orderByChild('userId'), equalTo(userId));
+                    const snapshot = await get(userTransactionsQuery);
+                    const transactions = snapshot.val();
 
-                    if (snapshot.exists()) {
-                        const userData = snapshot.val();
-                        const currentBalance = userData.solde || 0;
-                        const newBalance = currentBalance + parseFloat(amount);
-
+                    if (transactions) {
                         const updates = {};
-                        updates[`users/${userId}/solde`] = newBalance;
-                        updates[`transactions/${transactionId}/credited`] = true;
+                        Object.keys(transactions).forEach(transactionId => {
+                            updates[`transactions/${transactionId}`] = null;
+                        });
 
                         await update(ref(db), updates);
-                        creditedTransactions.add(transactionId);
+                        
+                        document.getElementById('historyList').innerHTML = '<div class="no-records">Aucune transaction trouvée</div>';
+                        deleteModal.style.display = 'none';
+                        alert('Votre historique de recharges a été supprimé avec succès.');
                     }
                 } catch (error) {
-                    console.error('Erreur de mise à jour du solde:', error);
-                }
-            }
-
-            function formatDate(dateString) {
-                try {
-                    const date = new Date(dateString);
-                    if (isNaN(date.getTime())) throw new Error('Date invalide');
-                    
-                    return new Intl.DateTimeFormat('fr-FR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }).format(date).replace(',', ' à');
-                } catch (error) {
-                    return 'Date non disponible';
-                }
-            }
-
-            function getStatusClass(status) {
-                const statusClasses = {
-                    success: 'status-success',
-                    pending: 'status-pending',
-                    failed: 'status-failed'
-                };
-                return statusClasses[status] || '';
-            }
-
-            function translateStatus(status) {
-                const translations = {
-                    success: 'Crédité',
-                    pending: 'En cour de verification',
-                    failed: 'Échec'
-                };
-                return translations[status] || status;
-            }
-
-            function createHistoryItem(transaction, userId) {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                historyItem.dataset.transactionId = transaction.transactionId || '';
-
-                if (transaction.status === 'success' && !transaction.credited && userId) {
-                    updateUserBalance(userId, transaction.amount || 0, transaction.transactionId);
-                }
-
-                historyItem.innerHTML = `
-                    <div class="history-info">
-                        <div class="info-group">
-                            <span class="info-label">Montant</span>
-                            <span class="info-value">${transaction.amount || 0} FCFA</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">Numéro rechargé</span>
-                            <span class="info-value">${transaction.phone || 'Non spécifié'}</span>
-                        </div>
-                    </div>
-                    <div class="history-info">
-                        <div class="info-group">
-                            <span class="info-label">Opérateur</span>
-                            <span class="info-value">${transaction.operator ? transaction.operator.toUpperCase() : 'Non spécifié'}</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">ID Transaction</span>
-                            <span class="info-value">${transaction.transactionId || 'Non spécifié'}</span>
-                        </div>
-                    </div>
-                    <div class="history-info">
-                        <div class="info-group">
-                            <span class="info-label">Date</span>
-                            <span class="info-value">${formatDate(transaction.date)}</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">Numéro de paiement</span>
-                            <span class="info-value">${transaction.userPaymentNumber || 'Non spécifié'}</span>
-                        </div>
-                        ${transaction.processedDate ? `
-                            <div class="processing-info">Traité le ${formatDate(transaction.processedDate)}</div>
-                        ` : ''}
-                        ${transaction.status === 'failed' && transaction.rejectReason ? `
-                            <div class="reject-reason">Motif du rejet: ${transaction.rejectReason}</div>
-                        ` : ''}
-                        <div class="status ${getStatusClass(transaction.status || 'pending')}">
-                            ${translateStatus(transaction.status || 'pending')}
-                        </div>
-                    </div>
-                `;
-
-                return historyItem;
-            }
-
-            function displayTransactions(transactions, userId) {
-                const historyList = document.getElementById('historyList');
-                
-                if (!transactions || Object.keys(transactions).length === 0) {
-                    historyList.innerHTML = '<div class="no-records">Aucune transaction trouvée</div>';
-                    return;
-                }
-
-                const transactionsArray = Object.entries(transactions)
-                    .map(([id, transaction]) => ({...transaction, id}))
-                    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-                const fragment = document.createDocumentFragment();
-                let hasNewItems = false;
-
-                transactionsArray.forEach(transaction => {
-                    const existingItem = document.querySelector(
-                        `[data-transaction-id="${transaction.transactionId}"]`
-                    );
-
-                    if (existingItem) {
-                        const newItem = createHistoryItem(transaction, userId);
-                        if (existingItem.innerHTML !== newItem.innerHTML) {
-                            existingItem.parentNode.replaceChild(newItem, existingItem);
-                        }
-                    } else {
-                        fragment.appendChild(createHistoryItem(transaction, userId));
-                        hasNewItems = true;
-                    }
-                });
-
-                if (hasNewItems) {
-                    if (historyList.children.length === 0) {
-                        historyList.appendChild(fragment);
-                    } else {
-                        historyList.insertBefore(fragment, historyList.firstChild);
-                    }
-                }
-
-                const currentIds = new Set(transactionsArray.map(t => t.transactionId));
-                Array.from(historyList.children).forEach(child => {
-                    const id = child.dataset.transactionId;
-                    if (id && !currentIds.has(id)) {
-                        child.remove();
-                    }
-                });
-            }
-
-            onAuthStateChanged(auth, (user) => {
-                const historyList = document.getElementById('historyList');
-                
-                if (user) {
-                    const transactionsRef = query(ref(db, 'transactions'), orderByChild('date'));
-                    
-                    onValue(transactionsRef, (snapshot) => {
-                        try {
-                            const transactions = snapshot.val();
-                            displayTransactions(transactions, user.uid);
-                        } catch (error) {
-                            console.error('Erreur lors de la récupération des transactions:', error);
-                            historyList.innerHTML = '<div class="no-records">Erreur lors du chargement des transactions</div>';
-                        }
-                    }, (error) => {
-                        console.error('Erreur Firebase:', error);
-                        historyList.innerHTML = '<div class="no-records">Erreur de connexion</div>';
-                    });
-                } else {
-                    historyList.innerHTML = '<div class="no-records">Veuillez vous connecter pour voir votre historique</div>';
+                    console.error('Erreur lors de la suppression de l\'historique:', error);
+                    alert('Une erreur est survenue lors de la suppression de l\'historique.');
                 }
             });
 
-        } catch (error) {
-            console.error('Erreur d\'initialisation:', error);
-            document.getElementById('historyList').innerHTML = 
-                '<div class="no-records">Erreur d\'initialisation de l\'application</div>';
+            deleteHistoryContainer.innerHTML = '';
+            deleteHistoryContainer.appendChild(deleteHistoryBtn);
         }
+
+        onAuthStateChanged(auth, (user) => {
+            const historyList = document.getElementById('historyList');
+            
+            if (user) {
+                toggleDeleteHistoryButton(user.uid);
+
+                // Modifier la requête pour filtrer par userId
+                const transactionsRef = query(
+                    ref(db, 'transactions'),
+                    orderByChild('userId'),
+                    equalTo(user.uid)
+                );
+                
+                onValue(transactionsRef, (snapshot) => {
+                    try {
+                        const transactions = snapshot.val();
+                        displayTransactions(transactions, user.uid);
+                    } catch (error) {
+                        console.error('Erreur lors de la récupération des transactions:', error);
+                        historyList.innerHTML = '<div class="no-records">Erreur lors du chargement des transactions</div>';
+                    }
+                }, (error) => {
+                    console.error('Erreur Firebase:', error);
+                    historyList.innerHTML = '<div class="no-records">Erreur de connexion</div>';
+                });
+            } else {
+                historyList.innerHTML = '<div class="no-records">Veuillez vous connecter pour voir votre historique</div>';
+            }
+        });
     </script>
 </body>
 </html>
